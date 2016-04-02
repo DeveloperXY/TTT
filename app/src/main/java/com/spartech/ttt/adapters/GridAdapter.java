@@ -3,12 +3,14 @@ package com.spartech.ttt.adapters;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.spartech.ttt.R;
+import com.spartech.ttt.gameutils.Mark;
 import com.spartech.ttt.model.Cell;
 
 import java.util.ArrayList;
@@ -39,12 +41,22 @@ public class GridAdapter extends ArrayAdapter<Cell> {
             viewHolder = new ViewHolder();
             viewHolder.textView = (TextView) convertView.findViewById(R.id.markTextview);
             convertView.setTag(viewHolder);
-        }
-        else
+        } else
             viewHolder = (ViewHolder) convertView.getTag();
 
         Cell cell = mCells.get(position);
-        viewHolder.textView.setTag("X");
+        viewHolder.textView.setText(cell.getMark().toString());
+
+        // Set a click listener on the grid cells
+        convertView.setOnTouchListener((v, event) -> {
+            if (cell.isEmpty()) {
+                cell.setMark(Mark.O);
+                viewHolder.textView.setText(cell.getMark().toString());
+                return false;
+            }
+
+            return true;
+        });
 
         return convertView;
     }
