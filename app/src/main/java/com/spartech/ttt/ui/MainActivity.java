@@ -15,6 +15,9 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * The main game board, containing the cells.
+     */
     @Bind(R.id.cellsGridview)
     GridView cellsGridview;
 
@@ -24,6 +27,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        setupGameGrid();
+    }
+
+    /**
+     * Initial setup of the game board.
+     */
+    private void setupGameGrid() {
         GridAdapter adapter = new GridAdapter(this,
                 Stream.generate(Cell::new)
                         .limit(9)

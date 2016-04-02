@@ -3,7 +3,6 @@ package com.spartech.ttt.adapters;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -47,7 +46,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         Cell cell = mCells.get(position);
         viewHolder.textView.setText(cell.getMark().toString());
 
-        // Set a click listener on the grid cells
+        // Set a touch listener on the grid cells
         convertView.setOnTouchListener((v, event) -> {
             if (cell.isEmpty()) {
                 cell.setMark(Mark.O);
