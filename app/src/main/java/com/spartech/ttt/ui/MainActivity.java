@@ -2,6 +2,7 @@ package com.spartech.ttt.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 import com.spartech.ttt.R;
 import com.spartech.ttt.adapters.GridAdapter;
+import com.spartech.ttt.gameutils.Mark;
 import com.spartech.ttt.model.Cell;
 import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * The symbol of the current player.
      */
-    private String mSymbol;
+    private Mark mSymbol;
     /**
      * A boolean flag that indicates whether it's the current player's turn or not.
      */
@@ -79,8 +81,30 @@ public class MainActivity extends AppCompatActivity {
                 Stream.generate(Cell::new)
                         .limit(9)
                         .collect(Collectors.toList()));
-        mGridAdapter.setGridListener(() -> myTurn);
+        mGridAdapter.setGridListener(new GridAdapter.GridListener() {
+            @Override
+            public boolean isMyTurn() {
+                return myTurn;
+            }
+
+            @Override
+            public void onCellClicked(int location) {
+                mGridAdapter.markCell(mSymbol, location);
+                try {
+                    makeMove(Cell.getCellPositionBasedOnLocation(location));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         cellsGridview.setAdapter(mGridAdapter);
+    }
+
+    private void makeMove(String position) throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put("symbol", mSymbol.toString());
+        params.put("position", position);
+        mSocket.emit(Events.MAKE_MOVE, params);
     }
 
     private void setupGameSocket() {
@@ -124,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void retrieveSymbolFromResponse(Object[] args) {
         try {
-            mSymbol = ((JSONObject) args[0]).getString("symbol");
+            mSymbol = ((JSONObject) args[0]).getString("symbol").equals("X") ?
+                    Mark.X : Mark.O;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -155,12 +180,18 @@ public class MainActivity extends AppCompatActivity {
                     () -> {
                         try {
                             JSONObject data = ((JSONObject) args[0]);
-                            String symbol = data.getString("symbol");
+                            Mark symbol = data.getString("symbol").equals("X") ?
+                                    Mark.X : Mark.O;
                             String position = data.getString("position");
 
-                            mGridAdapter.markCell(symbol, position);
-                            myTurn = !mSymbol.equals(symbol);
-                            statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
+                            // Unknown bug, this listener is getting called twice
+                            // First call: the 'position' string is valid,
+                            // Second call: invalid 'position'
+                            if (position.length() > 1) {
+                                mGridAdapter.markCell(symbol, position);
+                                myTurn = !mSymbol.equals(symbol);
+                                statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();

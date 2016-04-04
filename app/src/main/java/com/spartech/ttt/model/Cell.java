@@ -50,7 +50,7 @@ public class Cell {
 
     /**
      * @param location of the cell (1..9)
-     * @return the cell's string representation of its location [abc][123]
+     * @return the cell's string representation of its location [abc][012]
      */
     public static String getCellPositionBasedOnLocation(int location) {
         return location >= 0 && location < 3 ? ("a" + location) :

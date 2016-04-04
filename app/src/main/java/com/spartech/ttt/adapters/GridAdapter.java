@@ -56,6 +56,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
                 return true;
 
             if (cell.isEmpty()) {
+                gridListener.onCellClicked(position);
                 cell.setMark(Mark.O);
                 viewHolder.textView.setText(cell.getMark().toString());
                 return false;
@@ -74,8 +75,18 @@ public class GridAdapter extends ArrayAdapter<Cell> {
      * @param position of the clicked-upon cell
      */
     public void markCell(String mark, String position) {
+        Mark symbol = "O".equals(mark) ? Mark.O : Mark.X;
+        markCell(symbol, position);
+    }
+
+    public void markCell(Mark mark, int location) {
+        String position = Cell.getCellPositionBasedOnLocation(location);
+        markCell(mark, position);
+    }
+
+    public void markCell(Mark mark, String position) {
         Cell cell = mCells.get(Cell.getCellLocationBasedOnPosition(position));
-        cell.setMark("O".equals(mark) ? Mark.O : Mark.X);
+        cell.setMark(mark);
         notifyDataSetChanged();
     }
 
@@ -89,5 +100,6 @@ public class GridAdapter extends ArrayAdapter<Cell> {
 
     public interface GridListener {
         boolean isMyTurn();
+        void onCellClicked(int location);
     }
 }
