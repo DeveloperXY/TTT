@@ -12,6 +12,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.spartech.ttt.R;
 import com.spartech.ttt.adapters.GridAdapter;
 import com.spartech.ttt.model.Cell;
+import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
 
 import butterknife.Bind;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket.disconnect();
         mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        mSocket.off(Events.GAME_BEGIN, onGameBegin);
     }
 
     /**
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket = ((TTTApplication) getApplication()).getSocket();
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        mSocket.on(Events.GAME_BEGIN, onGameBegin);
 
         mSocket.connect();
     }
@@ -72,5 +75,14 @@ public class MainActivity extends AppCompatActivity {
             args -> runOnUiThread(
                     () -> Toast.makeText(MainActivity.this,
                             "Cannot connect to server.",
+                            Toast.LENGTH_LONG).show());
+
+    /**
+     * A listener that fires once a new game is about to begin.
+     */
+    private Emitter.Listener onGameBegin =
+            args -> runOnUiThread(
+                    () -> Toast.makeText(MainActivity.this,
+                            "Starting game !",
                             Toast.LENGTH_LONG).show());
 }
