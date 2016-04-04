@@ -22,6 +22,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
 
     private Context mContext;
     private List<Cell> mCells;
+    private GridListener gridListener;
 
     public GridAdapter(Context context, List<Cell> cells) {
         super(context, -1, cells);
@@ -48,6 +49,11 @@ public class GridAdapter extends ArrayAdapter<Cell> {
 
         // Set a touch listener on the grid cells
         convertView.setOnTouchListener((v, event) -> {
+            // If it's not the current player's turn, don't react
+            // to any click events on the grid.
+            if (!gridListener.isMyTurn())
+                return true;
+
             if (cell.isEmpty()) {
                 cell.setMark(Mark.O);
                 viewHolder.textView.setText(cell.getMark().toString());
@@ -62,5 +68,13 @@ public class GridAdapter extends ArrayAdapter<Cell> {
 
     private static class ViewHolder {
         TextView textView;
+    }
+
+    public void setGridListener(GridListener listener) {
+        gridListener = listener;
+    }
+
+    public interface GridListener {
+        boolean isMyTurn();
     }
 }

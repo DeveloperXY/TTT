@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 Stream.generate(Cell::new)
                         .limit(9)
                         .collect(Collectors.toList()));
+        adapter.setGridListener(() -> myTurn);
         cellsGridview.setAdapter(adapter);
     }
 
