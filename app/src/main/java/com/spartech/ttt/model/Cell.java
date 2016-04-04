@@ -35,27 +35,26 @@ public class Cell {
      * @return its "numeric" location.
      */
     public static int getCellLocationBasedOnPosition(String position) {
-        switch (position) {
-            case "a0":
-                return 0;
-            case "a1":
-                return 1;
-            case "a2":
-                return 2;
-            case "b0":
-                return 3;
-            case "b1":
-                return 4;
-            case "b2":
-                return 5;
-            case "c0":
-                return 6;
-            case "c1":
-                return 7;
-            case "c2":
-                return 8;
+        char numeric = position.charAt(1);
+        switch (position.charAt(0)) {
+            case 'a':
+                return Character.getNumericValue(numeric);
+            case 'b':
+                return Character.getNumericValue(numeric) + 3;
+            case 'c':
+                return Character.getNumericValue(numeric) + 6;
         }
 
         return -1;
+    }
+
+    /**
+     * @param location of the cell (1..9)
+     * @return the cell's string representation of its location [abc][123]
+     */
+    public static String getCellPositionBasedOnLocation(int location) {
+        return location >= 0 && location < 3 ? ("a" + location) :
+                location >= 3 && location < 6 ? ("b" + location) :
+                        ("c" + location);
     }
 }
