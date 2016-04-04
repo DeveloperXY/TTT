@@ -2,7 +2,6 @@ package com.spartech.ttt.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -170,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                                 "Your opponent has quit the game !",
                                 Toast.LENGTH_LONG).show();
                         statusLabel.setText("Waiting for opponent...");
+                        mGridAdapter.reset();
                     });
 
     /**

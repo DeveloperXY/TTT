@@ -2,13 +2,14 @@ package com.spartech.ttt.adapters;
 
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.spartech.ttt.R;
 import com.spartech.ttt.gameutils.Mark;
 import com.spartech.ttt.model.Cell;
@@ -71,7 +72,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
     /**
      * Marks a given cell with a given mark.
      *
-     * @param mark to be drawn on the concerned cell
+     * @param mark     to be drawn on the concerned cell
      * @param position of the clicked-upon cell
      */
     public void markCell(String mark, String position) {
@@ -90,6 +91,17 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         notifyDataSetChanged();
     }
 
+    /**
+     * Resets all the cells of the game grid.
+     */
+    public void reset() {
+        mCells.clear();
+        mCells.addAll(Stream.generate(Cell::new)
+                .limit(9)
+                .collect(Collectors.toList()));
+        notifyDataSetChanged();
+    }
+
     private static class ViewHolder {
         TextView textView;
     }
@@ -100,6 +112,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
 
     public interface GridListener {
         boolean isMyTurn();
+
         void onCellClicked(int location);
     }
 }
