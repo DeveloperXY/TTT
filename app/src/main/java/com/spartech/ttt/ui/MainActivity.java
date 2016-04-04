@@ -2,6 +2,7 @@ package com.spartech.ttt.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -15,17 +16,25 @@ import com.spartech.ttt.model.Cell;
 import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
-    private Socket mSocket;
 
     /**
      * The main game board, containing the cells.
      */
     @Bind(R.id.cellsGridview)
     GridView cellsGridview;
+
+    private Socket mSocket;
+    /**
+     * The symbol of the current player.
+     */
+    private String mSymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +91,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private Emitter.Listener onGameBegin =
             args -> runOnUiThread(
-                    () -> Toast.makeText(MainActivity.this,
-                            "Starting game !",
-                            Toast.LENGTH_LONG).show());
+                    () -> {
+                        Toast.makeText(MainActivity.this,
+                                "Starting game !",
+                                Toast.LENGTH_LONG).show();
+                        try {
+                            mSymbol = ((JSONObject) args[0]).getString("symbol");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    });
 }
