@@ -29,9 +29,16 @@ public class MainActivity extends AppCompatActivity {
      */
     @Bind(R.id.cellsGridview)
     GridView cellsGridview;
+    /**
+     * A label to describe the current state of the game.
+     */
     @Bind(R.id.statusLabel)
     TextView statusLabel;
 
+    /**
+     * The grid's adapter.
+     */
+    private GridAdapter mGridAdapter;
     private Socket mSocket;
     /**
      * The symbol of the current player.
@@ -60,18 +67,20 @@ public class MainActivity extends AppCompatActivity {
         mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
         mSocket.off(Events.GAME_BEGIN, onGameBegin);
+        mSocket.off(Events.OPPONENT_QUIT, onOpponentQuit);
+        mSocket.off(Events.MOVE_MADE, onMoveMade);
     }
 
     /**
      * Initial setup of the game board.
      */
     private void setupGameGrid() {
-        GridAdapter adapter = new GridAdapter(this,
+        mGridAdapter = new GridAdapter(this,
                 Stream.generate(Cell::new)
                         .limit(9)
                         .collect(Collectors.toList()));
-        adapter.setGridListener(() -> myTurn);
-        cellsGridview.setAdapter(adapter);
+        mGridAdapter.setGridListener(() -> myTurn);
+        cellsGridview.setAdapter(mGridAdapter);
     }
 
     private void setupGameSocket() {
@@ -80,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
         mSocket.on(Events.GAME_BEGIN, onGameBegin);
         mSocket.on(Events.OPPONENT_QUIT, onOpponentQuit);
+        mSocket.on(Events.MOVE_MADE, onMoveMade);
 
         mSocket.connect();
     }
@@ -135,5 +145,25 @@ public class MainActivity extends AppCompatActivity {
                                 "Your opponent has quit the game !",
                                 Toast.LENGTH_LONG).show();
                         statusLabel.setText("Waiting for opponent...");
+                    });
+
+    /**
+     * A listener that fires once the opponent player quits the current game.
+     */
+    private Emitter.Listener onMoveMade =
+            args -> runOnUiThread(
+                    () -> {
+                        try {
+                            JSONObject data = ((JSONObject) args[0]);
+                            String symbol = data.getString("symbol");
+                            String position = data.getString("position");
+
+                            mGridAdapter.markCell(symbol, position);
+                            myTurn = !mSymbol.equals(symbol);
+                            statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     });
 }

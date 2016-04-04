@@ -2,6 +2,7 @@ package com.spartech.ttt.adapters;
 
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,18 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         });
 
         return convertView;
+    }
+
+    /**
+     * Marks a given cell with a given mark.
+     *
+     * @param mark to be drawn on the concerned cell
+     * @param position of the clicked-upon cell
+     */
+    public void markCell(String mark, String position) {
+        Cell cell = mCells.get(Cell.getCellLocationBasedOnPosition(position));
+        cell.setMark("O".equals(mark) ? Mark.O : Mark.X);
+        notifyDataSetChanged();
     }
 
     private static class ViewHolder {
