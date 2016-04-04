@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.spartech.ttt.gameutils.Constants;
 
 import java.net.URISyntaxException;
 
@@ -11,10 +12,6 @@ import java.net.URISyntaxException;
  * Created by Moham on 04/04/2016.
  */
 public class TTTApplication extends Application {
-    private static final String SERVER_IP = "192.168.173.1";
-    private static final String SERVER_PORT = "3000";
-    private static final String SERVER_IP_ADDRESS =
-            String.format("%s:%s", SERVER_IP, SERVER_PORT);
     private Socket mSocket;
 
     @Override
@@ -22,8 +19,7 @@ public class TTTApplication extends Application {
         super.onCreate();
 
         try {
-            mSocket = IO.socket(SERVER_IP_ADDRESS);
-            mSocket.connect();
+            mSocket = IO.socket(Constants.SERVER_IP_ADDRESS);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
