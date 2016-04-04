@@ -3,6 +3,7 @@ package com.spartech.ttt.ui;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.annimon.stream.Collectors;
@@ -28,12 +29,18 @@ public class MainActivity extends AppCompatActivity {
      */
     @Bind(R.id.cellsGridview)
     GridView cellsGridview;
+    @Bind(R.id.statusLabel)
+    TextView statusLabel;
 
     private Socket mSocket;
     /**
      * The symbol of the current player.
      */
     private String mSymbol;
+    /**
+     * A boolean flag that indicates whether it's the current player's turn or not.
+     */
+    private boolean myTurn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,19 +102,37 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this,
                                 "Starting game !",
                                 Toast.LENGTH_LONG).show();
-                        try {
-                            mSymbol = ((JSONObject) args[0]).getString("symbol");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        retrieveSymbolFromResponse(args);
+                        initializeGameBoard();
                     });
+
+    /**
+     * Retrieves the representative symbol of the current player.
+     *
+     * @param args the server's response
+     */
+    private void retrieveSymbolFromResponse(Object[] args) {
+        try {
+            mSymbol = ((JSONObject) args[0]).getString("symbol");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initializeGameBoard() {
+        myTurn = "X".equals(mSymbol);
+        statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
+    }
 
     /**
      * A listener that fires once the opponent player quits the current game.
      */
     private Emitter.Listener onOpponentQuit =
             args -> runOnUiThread(
-                    () -> Toast.makeText(MainActivity.this,
-                            "Your opponent has quit the game !",
-                            Toast.LENGTH_LONG).show());
+                    () -> {
+                        Toast.makeText(MainActivity.this,
+                                "Your opponent has quit the game !",
+                                Toast.LENGTH_LONG).show();
+                        statusLabel.setText("Waiting for opponent...");
+                    });
 }

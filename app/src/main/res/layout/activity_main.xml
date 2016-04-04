@@ -17,7 +17,14 @@
         android:gravity="center"
         android:horizontalSpacing="10dp"
         android:numColumns="3"
-        android:stretchMode="columnWidth"
-        android:touchscreenBlocksFocus="false"
         android:verticalSpacing="10dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Waiting for opponent..."
+        android:id="@+id/statusLabel"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:textSize="24sp" />
 </RelativeLayout>
