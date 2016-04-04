@@ -190,11 +190,22 @@ public class MainActivity extends AppCompatActivity {
                             if (position.length() > 1) {
                                 mGridAdapter.markCell(symbol, position);
                                 myTurn = !mSymbol.equals(symbol);
-                                statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
+                                if (isGameOver())
+                                    statusLabel.setText(myTurn ?
+                                            "Game over. You lost." :
+                                            "Game over. You WON !");
+                                else
+                                    statusLabel.setText(myTurn ?
+                                            "Your turn." :
+                                            "Waiting for your opponent's move...");
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     });
+
+    private boolean isGameOver() {
+        return mGridAdapter.isGameOver();
+    }
 }

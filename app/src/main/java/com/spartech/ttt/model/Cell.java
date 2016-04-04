@@ -57,4 +57,9 @@ public class Cell {
                 location >= 3 && location < 6 ? ("b" + (location - 3)) :
                         ("c" + (location - 6));
     }
+
+    @Override
+    public String toString() {
+        return mark.toString();
+    }
 }

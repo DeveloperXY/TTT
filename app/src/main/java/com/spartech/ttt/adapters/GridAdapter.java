@@ -102,6 +102,30 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         notifyDataSetChanged();
     }
 
+    /**
+     * @return true if one of the players has won, or false otherwise.
+     */
+    public boolean isGameOver() {
+        String[] matches = {"XXX", "OOO"};
+        String[] rows = {
+                mCells.get(0).toString() + mCells.get(1).toString() + mCells.get(2).toString(),
+                mCells.get(3).toString() + mCells.get(4).toString() + mCells.get(5).toString(),
+                mCells.get(6).toString() + mCells.get(7).toString() + mCells.get(8).toString(),
+                mCells.get(0).toString() + mCells.get(4).toString() + mCells.get(8).toString(),
+                mCells.get(2).toString() + mCells.get(4).toString() + mCells.get(6).toString(),
+                mCells.get(0).toString() + mCells.get(3).toString() + mCells.get(6).toString(),
+                mCells.get(1).toString() + mCells.get(4).toString() + mCells.get(7).toString(),
+                mCells.get(2).toString() + mCells.get(5).toString() + mCells.get(8).toString()
+        };
+
+        for (int i = 0; i < rows.length; i++) {
+            if (rows[i].equals(matches[0]) || rows[i].equals(matches[1]))
+                return true;
+        }
+
+        return false;
+    }
+
     private static class ViewHolder {
         TextView textView;
     }
