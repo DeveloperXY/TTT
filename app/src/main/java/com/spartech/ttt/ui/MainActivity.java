@@ -20,6 +20,10 @@ import com.spartech.ttt.socketio.TTTApplication;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -49,12 +53,15 @@ public class MainActivity extends AppCompatActivity {
      * A boolean flag that indicates whether it's the current player's turn or not.
      */
     private boolean myTurn;
+    private ScheduledExecutorService executor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        executor = Executors.newSingleThreadScheduledExecutor();
 
         setupGameGrid();
         setupGameSocket();
@@ -70,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         mSocket.off(Events.GAME_BEGIN, onGameBegin);
         mSocket.off(Events.OPPONENT_QUIT, onOpponentQuit);
         mSocket.off(Events.MOVE_MADE, onMoveMade);
+
+        executor.shutdown();
     }
 
     /**
@@ -194,11 +203,8 @@ public class MainActivity extends AppCompatActivity {
                                     statusLabel.setText(myTurn ?
                                             "Game over. You lost." :
                                             "Game over. You WON !");
-                                    /*ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-                                    Runnable task = () -> Platform.runLater(() -> statusLabel.setText("Ready."));
-                                    executor.schedule(task, 5, TimeUnit.SECONDS);
-
-                                    executor.shutdown();*/
+                                    Runnable task = this::finish;
+                                    executor.schedule(task, 3, TimeUnit.SECONDS);
                                 } else
                                     statusLabel.setText(myTurn ?
                                             "Your turn." :
