@@ -190,11 +190,16 @@ public class MainActivity extends AppCompatActivity {
                             if (position.length() > 1) {
                                 mGridAdapter.markCell(symbol, position);
                                 myTurn = !mSymbol.equals(symbol);
-                                if (isGameOver())
+                                if (isGameOver()) {
                                     statusLabel.setText(myTurn ?
                                             "Game over. You lost." :
                                             "Game over. You WON !");
-                                else
+                                    /*ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                                    Runnable task = () -> Platform.runLater(() -> statusLabel.setText("Ready."));
+                                    executor.schedule(task, 5, TimeUnit.SECONDS);
+
+                                    executor.shutdown();*/
+                                } else
                                     statusLabel.setText(myTurn ?
                                             "Your turn." :
                                             "Waiting for your opponent's move...");
