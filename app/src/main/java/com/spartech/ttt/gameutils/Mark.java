@@ -1,8 +1,8 @@
 package com.spartech.ttt.gameutils;
 
 /**
- * Created by Moham on 02/04/2016.
- *
+ * Created by Mohammed Aouf ZOUAG on 02/04/2016.
+ * <p>
  * The mark of a cell.
  */
 public enum Mark {

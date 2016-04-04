@@ -1,7 +1,9 @@
 package com.spartech.ttt.socketio;
 
 /**
- * Created by Moham on 04/04/2016.
+ * Created by Mohammed Aouf ZOUAG on 04/04/2016.
+ * <p>
+ * A class that describes the kind of possible events during game play.
  */
 public class Events {
     public static final String GAME_BEGIN = "gameBegin";

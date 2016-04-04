@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Moham on 02/04/2016.
+ * Created by Mohammed Aouf ZOUAG on 02/04/2016.
  */
 public class GridAdapter extends ArrayAdapter<Cell> {
 

@@ -9,7 +9,7 @@ import com.spartech.ttt.gameutils.Constants;
 import java.net.URISyntaxException;
 
 /**
- * Created by Moham on 04/04/2016.
+ * Created by Mohammed Aouf ZOUAG on 04/04/2016.
  */
 public class TTTApplication extends Application {
     private Socket mSocket;

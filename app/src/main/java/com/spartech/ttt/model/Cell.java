@@ -3,8 +3,8 @@ package com.spartech.ttt.model;
 import com.spartech.ttt.gameutils.Mark;
 
 /**
- * Created by Moham on 02/04/2016.
- *
+ * Created by Mohammed Aouf ZOUAG on 02/04/2016.
+ * <p>
  * Represents a game cell.
  */
 public class Cell {
