@@ -54,7 +54,7 @@ public class Cell {
      */
     public static String getCellPositionBasedOnLocation(int location) {
         return location >= 0 && location < 3 ? ("a" + location) :
-                location >= 3 && location < 6 ? ("b" + location) :
-                        ("c" + location);
+                location >= 3 && location < 6 ? ("b" + (location - 3)) :
+                        ("c" + (location - 6));
     }
 }
