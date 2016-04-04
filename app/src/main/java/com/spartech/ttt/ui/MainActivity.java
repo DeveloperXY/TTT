@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
         mSocket.on(Events.GAME_BEGIN, onGameBegin);
+        mSocket.on(Events.OPPONENT_QUIT, onOpponentQuit);
 
         mSocket.connect();
     }
@@ -101,4 +102,13 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     });
+
+    /**
+     * A listener that fires once the opponent player quits the current game.
+     */
+    private Emitter.Listener onOpponentQuit =
+            args -> runOnUiThread(
+                    () -> Toast.makeText(MainActivity.this,
+                            "Your opponent has quit the game !",
+                            Toast.LENGTH_LONG).show());
 }
