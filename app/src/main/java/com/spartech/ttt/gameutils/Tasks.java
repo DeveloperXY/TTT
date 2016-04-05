@@ -12,6 +12,6 @@ public class Tasks {
      * @return a new Runnable object, that terminates the passed-in activity.
      */
     public static Runnable delayedFinish(Context context) {
-        return ((AppCompatActivity) context)::onBackPressed;
+        return ((AppCompatActivity) context)::finish;
     }
 }
