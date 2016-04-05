@@ -2,7 +2,6 @@ package com.spartech.ttt.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean myTurn;
     private ScheduledExecutorService executor;
+    private TTTApplication mApplication;
+
+    /**
+     * This flag indicates whether we would be switching to another activity or not.
+     * If this flag is set to true, then that would mean that we should not stop
+     * the audio playback.
+     */
+    private boolean isSwitching;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +68,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mApplication = (TTTApplication) getApplication();
+        isSwitching = false;
+
         setupGameGrid();
         setupGameSocket();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mApplication.resumeMediaPlayer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (!isSwitching)
+            mApplication.pauseMediaPlayer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        isSwitching = true;
+        super.onBackPressed();
     }
 
     @Override
