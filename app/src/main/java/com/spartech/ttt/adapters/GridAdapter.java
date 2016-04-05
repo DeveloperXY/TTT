@@ -53,7 +53,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         convertView.setOnTouchListener((v, event) -> {
             // If it's not the current player's turn, don't react
             // to any click events on the grid.
-            if (!gridListener.isMyTurn())
+            if (!gridListener.isMyTurn() || isGameOver())
                 return true;
 
             if (cell.isEmpty()) {
