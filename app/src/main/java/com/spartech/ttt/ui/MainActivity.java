@@ -6,14 +6,12 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 import com.spartech.ttt.R;
 import com.spartech.ttt.adapters.GridAdapter;
 import com.spartech.ttt.gameutils.Mark;
-import com.spartech.ttt.model.Cell;
+import com.spartech.ttt.model.Cells;
 import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
 
@@ -61,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        executor = Executors.newSingleThreadScheduledExecutor();
-
         setupGameGrid();
         setupGameSocket();
     }
@@ -85,10 +81,7 @@ public class MainActivity extends AppCompatActivity {
      * Initial setup of the game board.
      */
     private void setupGameGrid() {
-        mGridAdapter = new GridAdapter(this,
-                Stream.generate(Cell::new)
-                        .limit(9)
-                        .collect(Collectors.toList()));
+        mGridAdapter = new GridAdapter(this, Cells.newEmptyGrid());
         mGridAdapter.setGridListener(new GridAdapter.GridListener() {
             @Override
             public boolean isMyTurn() {
@@ -99,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCellClicked(int location) {
                 mGridAdapter.markCell(mSymbol, location);
                 try {
-                    makeMove(Cell.getCellPositionBasedOnLocation(location));
+                    makeMove(Cells.getCellPositionBasedOnLocation(location));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -164,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGameBoard() {
-        myTurn = "X".equals(mSymbol);
+        myTurn = "X".equals(mSymbol.toString());
         statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
     }
 
@@ -199,22 +192,28 @@ public class MainActivity extends AppCompatActivity {
                             if (position.length() > 1) {
                                 mGridAdapter.markCell(symbol, position);
                                 myTurn = !mSymbol.equals(symbol);
-                                if (isGameOver()) {
-                                    statusLabel.setText(myTurn ?
-                                            "Game over. You lost." :
-                                            "Game over. You WON !");
-                                    Runnable task = this::finish;
-                                    executor.schedule(task, 3, TimeUnit.SECONDS);
-                                } else
-                                    statusLabel.setText(myTurn ?
-                                            "Your turn." :
-                                            "Waiting for your opponent's move...");
+                                checkIfGameWasOver();
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     });
+
+    private void checkIfGameWasOver() {
+        if (isGameOver()) {
+            if (executor == null)
+                executor = Executors.newSingleThreadScheduledExecutor();
+            statusLabel.setText(myTurn ?
+                    "Game over. You lost." :
+                    "Game over. You WON !");
+            Runnable task = this::finish;
+            executor.schedule(task, 3, TimeUnit.SECONDS);
+        } else
+            statusLabel.setText(myTurn ?
+                    "Your turn." :
+                    "Waiting for your opponent's move...");
+    }
 
     private boolean isGameOver() {
         return mGridAdapter.isGameOver();

@@ -8,11 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.spartech.ttt.R;
 import com.spartech.ttt.gameutils.Mark;
 import com.spartech.ttt.model.Cell;
+import com.spartech.ttt.model.Cells;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,12 +80,12 @@ public class GridAdapter extends ArrayAdapter<Cell> {
     }
 
     public void markCell(Mark mark, int location) {
-        String position = Cell.getCellPositionBasedOnLocation(location);
+        String position = Cells.getCellPositionBasedOnLocation(location);
         markCell(mark, position);
     }
 
     public void markCell(Mark mark, String position) {
-        Cell cell = mCells.get(Cell.getCellLocationBasedOnPosition(position));
+        Cell cell = mCells.get(Cells.getCellLocationBasedOnPosition(position));
         cell.setMark(mark);
         notifyDataSetChanged();
     }
@@ -96,9 +95,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
      */
     public void reset() {
         mCells.clear();
-        mCells.addAll(Stream.generate(Cell::new)
-                .limit(9)
-                .collect(Collectors.toList()));
+        mCells.addAll(Cells.newEmptyGrid());
         notifyDataSetChanged();
     }
 

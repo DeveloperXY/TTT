@@ -40,13 +40,13 @@ public class ParametrizedCellTests {
 
     @Test
     public void ValidCellPositionGivesAValidLocation() throws Exception {
-        int location = Cell.getCellLocationBasedOnPosition(inputPosition);
+        int location = Cells.getCellLocationBasedOnPosition(inputPosition);
         assertEquals(expectedLocation, location);
     }
 
     @Test
     public void ValidCellLocationGivesAValidCellPosition() throws Exception {
-        String position = Cell.getCellPositionBasedOnLocation(expectedLocation);
+        String position = Cells.getCellPositionBasedOnLocation(expectedLocation);
         assertEquals(inputPosition, position);
     }
 }
