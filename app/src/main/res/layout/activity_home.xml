@@ -31,4 +31,12 @@
             android:id="@+id/quitButton"
             android:onClick="onQuit" />
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/imageView"
+        android:src="@drawable/transparent_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
 </RelativeLayout>
