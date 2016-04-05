@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.spartech.ttt.R;
 import com.spartech.ttt.gameutils.Mark;
 import com.spartech.ttt.model.Cell;
@@ -121,6 +122,14 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         }
 
         return false;
+    }
+
+    /**
+     * @return true if there are no empty cells within the grid, false otherwise.
+     */
+    public boolean isGridFull() {
+        return Stream.of(mCells)
+                .allMatch(mark -> !mark.isEmpty());
     }
 
     private static class ViewHolder {

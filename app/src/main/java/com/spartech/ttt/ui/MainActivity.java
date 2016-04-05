@@ -2,6 +2,7 @@ package com.spartech.ttt.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,6 +12,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.spartech.ttt.R;
 import com.spartech.ttt.adapters.GridAdapter;
 import com.spartech.ttt.gameutils.Mark;
+import com.spartech.ttt.gameutils.Tasks;
 import com.spartech.ttt.model.Cells;
 import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
@@ -74,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
         mSocket.off(Events.OPPONENT_QUIT, onOpponentQuit);
         mSocket.off(Events.MOVE_MADE, onMoveMade);
 
-        executor.shutdown();
+        if (executor != null)
+            executor.shutdown();
     }
 
     /**
@@ -144,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Retrieves the representative symbol of the current player.
+     * SYMBOL
      *
      * @param args the server's response
      */
@@ -201,18 +205,33 @@ public class MainActivity extends AppCompatActivity {
                     });
 
     private void checkIfGameWasOver() {
+        // A boolean flag that indicates whether to terminate the activity
+        // after a certain delay or not
+        boolean delayedFinish = false;
+        String statusMessage;
+
         if (isGameOver()) {
+            statusMessage = myTurn ? "Game over. You lost." : "Game over. You WON !";
+            delayedFinish = true;
+        } else {
+            if (mGridAdapter.isGridFull()) {
+                // This game is a draw
+                delayedFinish = true;
+                statusMessage = "Close one, It's a DRAW !";
+            } else {
+                // The game isn't over yet
+                statusMessage = myTurn ? "Your turn." :
+                        "Waiting for your opponent's move...";
+            }
+        }
+
+        statusLabel.setText(statusMessage);
+
+        if (delayedFinish) {
             if (executor == null)
                 executor = Executors.newSingleThreadScheduledExecutor();
-            statusLabel.setText(myTurn ?
-                    "Game over. You lost." :
-                    "Game over. You WON !");
-            Runnable task = this::finish;
-            executor.schedule(task, 3, TimeUnit.SECONDS);
-        } else
-            statusLabel.setText(myTurn ?
-                    "Your turn." :
-                    "Waiting for your opponent's move...");
+            executor.schedule(Tasks.delayedFinish(this), 3, TimeUnit.SECONDS);
+        }
     }
 
     private boolean isGameOver() {
