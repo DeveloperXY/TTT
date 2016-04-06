@@ -1,13 +1,7 @@
 package com.spartech.ttt.ui;
 
-import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +11,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.spartech.ttt.R;
 import com.spartech.ttt.adapters.GridAdapter;
 import com.spartech.ttt.gameutils.Mark;
-import com.spartech.ttt.gameutils.Tasks;
+import com.spartech.ttt.gameutils.NotificationUtils;
 import com.spartech.ttt.model.Cells;
 import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
@@ -27,7 +21,6 @@ import org.json.JSONObject;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -60,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean myTurn;
     private ScheduledExecutorService executor;
     private TTTApplication mApplication;
+    private NotificationUtils mNotifier;
 
     /**
      * This flag indicates whether we would be switching to another activity or not.
@@ -74,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mNotifier = new NotificationUtils(this);
         mApplication = (TTTApplication) getApplication();
         isSwitching = false;
 
@@ -223,32 +218,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this,
                                 "Incoming rematch request !",
                                 Toast.LENGTH_LONG).show();
-                        createRequestNotification();
+                        mNotifier.displayRequestNotification();
                     });
-
-    private void createRequestNotification() {
-        Intent acceptIntent = new Intent(this, NotificationActionService.class);
-        acceptIntent.setAction("ACCEPT");
-        PendingIntent piAccept = PendingIntent.getService(this, 0, acceptIntent, 0);
-
-        Intent denyIntent = new Intent(this, NotificationActionService.class);
-        acceptIntent.setAction("DENY");
-        PendingIntent piDeny = PendingIntent.getService(this, 0, denyIntent, 0);
-
-        Notification notification = new NotificationCompat.Builder(MainActivity.this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Rematch request")
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Your opponent is requesting a rematch. What is it going to be ?"))
-                .addAction(R.drawable.ic_action_tick, "Accept", piAccept)
-                .addAction(R.drawable.ic_action_cancel, "Deny", piDeny)
-                .build();
-
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(45600, notification);
-    }
 
     /**
      * A listener that fires once a player makes a move on the grid.
@@ -309,17 +280,5 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isGameOver() {
         return mGridAdapter.isGameOver();
-    }
-
-    private static class NotificationActionService extends IntentService {
-        public NotificationActionService() {
-            super(NotificationActionService.class.getSimpleName());
-        }
-
-        @Override
-        protected void onHandleIntent(Intent intent) {
-            String action = intent.getAction();
-
-        }
     }
 }
