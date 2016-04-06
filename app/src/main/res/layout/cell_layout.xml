@@ -9,7 +9,7 @@
         android:id="@+id/markTextview"
         android:layout_width="90dp"
         android:layout_height="90dp"
-        android:background="@drawable/pink_rectangle"
+        android:background="@drawable/white_frame"
         android:gravity="center"
         android:textSize="60sp"
         tools:text="X" />

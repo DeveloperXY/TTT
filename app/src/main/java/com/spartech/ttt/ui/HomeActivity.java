@@ -28,6 +28,12 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        isSwitching = true;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         mApplication.resumeMediaPlayer();
@@ -44,7 +50,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mApplication.killMediaPlayer();
+        if (!isSwitching)
+            mApplication.killMediaPlayer();
     }
 
     public void onPlay(View view) {

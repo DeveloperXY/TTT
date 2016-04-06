@@ -19,18 +19,20 @@
         android:text="Rematch"
         android:theme="@style/ThemeOverlay.MyDarkButton"
         android:visibility="invisible"
-        android:onClick="onRematch" />
+        android:onClick="onRematch"
+        android:layout_marginBottom="40dp" />
 
     <GridView
         android:id="@+id/cellsGridview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:columnWidth="90dp"
         android:gravity="center"
         android:horizontalSpacing="10dp"
         android:numColumns="3"
-        android:verticalSpacing="10dp" />
+        android:verticalSpacing="10dp"
+        android:layout_below="@+id/rematchButton" />
 
     <TextView
         android:id="@+id/statusLabel"

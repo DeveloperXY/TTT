@@ -156,6 +156,14 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+
+            @Override
+            public void paintCells(int[] locations) {
+                for (int i = 0; i < locations.length; i++) {
+                    cellsGridview.getChildAt(locations[i])
+                            .setBackgroundResource(R.drawable.dark_blue_cell_bg);
+                }
+            }
         });
         cellsGridview.setAdapter(mGridAdapter);
     }
@@ -183,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
     private Emitter.Listener onGameBegin =
             args -> runOnUiThread(
                     () -> {
-                        rematchButton.setEnabled(true);
                         rematchButton.setVisibility(View.INVISIBLE);
                         Toast.makeText(MainActivity.this,
                                 "Starting game !",
@@ -266,6 +273,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGameBoard() {
+        for (int i = 0; i < cellsGridview.getChildCount(); i++) {
+            cellsGridview.getChildAt(i)
+                    .setBackgroundResource(R.drawable.white_frame);
+        }
         mGridAdapter.reset();
         myTurn = "X".equals(mSymbol.toString());
         statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
@@ -298,10 +309,13 @@ public class MainActivity extends AppCompatActivity {
         if (isGameOver()) {
             statusMessage = myTurn ? "Game over. You lost." : "Game over. You WON !";
             rematchButton.setVisibility(View.VISIBLE);
+            rematchButton.setEnabled(true);
         } else {
             if (mGridAdapter.isGridFull()) {
                 // This game is a draw
                 statusMessage = "Close one, It's a DRAW !";
+                rematchButton.setVisibility(View.VISIBLE);
+                rematchButton.setEnabled(true);
             } else {
                 // The game isn't over yet
                 statusMessage = myTurn ? "Your turn." :

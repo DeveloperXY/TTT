@@ -91,6 +91,10 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         notifyDataSetChanged();
     }
 
+    private void markCells(int[] locations) {
+        gridListener.paintCells(locations);
+    }
+
     /**
      * Resets all the cells of the game grid.
      */
@@ -117,8 +121,36 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         };
 
         for (int i = 0; i < rows.length; i++) {
-            if (rows[i].equals(matches[0]) || rows[i].equals(matches[1]))
+            if (rows[i].equals(matches[0]) || rows[i].equals(matches[1])) {
+                switch (i) {
+                    case 0:
+                        markCells(new int[]{0, 1, 2});
+                        break;
+                    case 1:
+                        markCells(new int[]{3, 4, 5});
+                        break;
+                    case 2:
+                        markCells(new int[]{6, 7, 8});
+                        break;
+                    case 3:
+                        markCells(new int[]{0, 4, 8});
+                        break;
+                    case 4:
+                        markCells(new int[]{2, 4, 6});
+                        break;
+                    case 5:
+                        markCells(new int[]{0, 3, 6});
+                        break;
+                    case 6:
+                        markCells(new int[]{1, 4, 7});
+                        break;
+                    case 7:
+                        markCells(new int[]{2, 5, 8});
+                        break;
+                }
+
                 return true;
+            }
         }
 
         return false;
@@ -144,5 +176,7 @@ public class GridAdapter extends ArrayAdapter<Cell> {
         boolean isMyTurn();
 
         void onCellClicked(int location);
+
+        void paintCells(int[] locations);
     }
 }
