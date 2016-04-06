@@ -3,6 +3,7 @@ package com.spartech.ttt.ui;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,8 +20,6 @@ import com.spartech.ttt.socketio.TTTApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.concurrent.ScheduledExecutorService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -51,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
      * A boolean flag that indicates whether it's the current player's turn or not.
      */
     private boolean myTurn;
-    private ScheduledExecutorService executor;
     private TTTApplication mApplication;
+    private AlertDialog mAlertDialog;
 
     /**
      * This flag indicates whether we would be switching to another activity or not.
@@ -116,9 +115,6 @@ public class MainActivity extends AppCompatActivity {
         mSocket.off(Events.OPPONENT_QUIT, onOpponentQuit);
         mSocket.off(Events.MOVE_MADE, onMoveMade);
         mSocket.off(Events.INCOMING_REMATCH_REQUEST, onRematchRequest);
-
-        if (executor != null)
-            executor.shutdown();
     }
 
     /**
@@ -255,9 +251,10 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Yeah, why not",
                         (dialog, which) -> acceptRematchRequest(true));
 
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
+        mAlertDialog = builder.create();
+        mAlertDialog.setCancelable(false);
+        mAlertDialog.setCanceledOnTouchOutside(false);
+        mAlertDialog.show();
     }
 
     private void checkIfGameWasOver() {
