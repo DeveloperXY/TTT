@@ -1,6 +1,7 @@
 package com.spartech.ttt.ui;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -11,7 +12,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.spartech.ttt.R;
 import com.spartech.ttt.adapters.GridAdapter;
 import com.spartech.ttt.gameutils.Mark;
-import com.spartech.ttt.gameutils.NotificationUtils;
+import com.spartech.ttt.gameutils.Tasks;
 import com.spartech.ttt.model.Cells;
 import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean myTurn;
     private ScheduledExecutorService executor;
     private TTTApplication mApplication;
-    private NotificationUtils mNotifier;
 
     /**
      * This flag indicates whether we would be switching to another activity or not.
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mNotifier = new NotificationUtils(this);
         mApplication = (TTTApplication) getApplication();
         isSwitching = false;
 
@@ -192,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGameBoard() {
+        mGridAdapter.reset();
         myTurn = "X".equals(mSymbol.toString());
         statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
     }
@@ -213,13 +213,27 @@ public class MainActivity extends AppCompatActivity {
      * A listener that fires when the opponent player sends a rematch request.
      */
     private Emitter.Listener onRematchRequest =
-            args -> runOnUiThread(
-                    () -> {
-                        Toast.makeText(MainActivity.this,
-                                "Incoming rematch request !",
-                                Toast.LENGTH_LONG).show();
-                        mNotifier.displayRequestNotification();
-                    });
+            args -> runOnUiThread(this::displayRequestNotificationDialog);
+
+    /**
+     * Displays a dialog, notifying the user of an incoming rematch request.
+     */
+    private void displayRequestNotificationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle("Rematch request");
+        builder.setMessage("Your opponent is asking for a rematch ! What do you say we kick his ass again ?");
+        builder.setNegativeButton("Not now",
+                (dialog, which) -> {
+                    acceptRematchRequest(false);
+                    Tasks.closeActivityAfterDelay(this);
+                })
+                .setPositiveButton("Yeah, why not",
+                        (dialog, which) -> acceptRematchRequest(true));
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+    }
 
     /**
      * A listener that fires once a player makes a move on the grid.
@@ -248,18 +262,13 @@ public class MainActivity extends AppCompatActivity {
                     });
 
     private void checkIfGameWasOver() {
-        // A boolean flag that indicates whether to terminate the activity
-        // after a certain delay or not
-        boolean delayedFinish = false;
         String statusMessage;
 
         if (isGameOver()) {
             statusMessage = myTurn ? "Game over. You lost." : "Game over. You WON !";
-            delayedFinish = true;
         } else {
             if (mGridAdapter.isGridFull()) {
                 // This game is a draw
-                delayedFinish = true;
                 statusMessage = "Close one, It's a DRAW !";
             } else {
                 // The game isn't over yet
@@ -269,16 +278,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         statusLabel.setText(statusMessage);
-
-        if (delayedFinish) {
-            if (executor == null)
-                executor = Executors.newSingleThreadScheduledExecutor();
-//            executor.schedule(Tasks.delayedFinish(this), 3, TimeUnit.SECONDS);
-
-        }
     }
 
     private boolean isGameOver() {
         return mGridAdapter.isGameOver();
+    }
+
+    /**
+     * Responds to the incoming rematch request.
+     *
+     * @param action to take (true: accept / false: deny)
+     */
+    private void acceptRematchRequest(boolean action) {
+        Socket socket = ((TTTApplication) getApplication()).getSocket();
+
+        try {
+            JSONObject params = new JSONObject();
+            params.put("response", action);
+            socket.emit("rematchResponse", params);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
