@@ -2,7 +2,6 @@ package com.spartech.ttt.socketio;
 
 import android.app.Application;
 import android.media.MediaPlayer;
-import android.util.Log;
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -18,7 +17,7 @@ public class TTTApplication extends Application {
     private Socket mSocket;
     private MediaPlayer mediaPlayer;
     /**
-     * A boolean flag that indicates whther the media player had been released.
+     * A boolean flag that indicates whether the media player had been released.
      */
     private boolean isReleased;
 

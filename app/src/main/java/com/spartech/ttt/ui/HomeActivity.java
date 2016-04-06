@@ -1,17 +1,12 @@
 package com.spartech.ttt.ui;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 
 import com.spartech.ttt.R;
 import com.spartech.ttt.socketio.TTTApplication;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 
 public class HomeActivity extends AppCompatActivity {
 

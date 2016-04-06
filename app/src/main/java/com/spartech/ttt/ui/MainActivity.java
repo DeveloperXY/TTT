@@ -20,7 +20,6 @@ import com.spartech.ttt.socketio.TTTApplication;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import butterknife.Bind;
@@ -94,6 +93,18 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    private void setupGameSocket() {
+        mSocket = ((TTTApplication) getApplication()).getSocket();
+        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        mSocket.on(Events.GAME_BEGIN, onGameBegin);
+        mSocket.on(Events.OPPONENT_QUIT, onOpponentQuit);
+        mSocket.on(Events.MOVE_MADE, onMoveMade);
+        mSocket.on(Events.INCOMING_REMATCH_REQUEST, onRematchRequest);
+
+        mSocket.connect();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -141,18 +152,6 @@ public class MainActivity extends AppCompatActivity {
         mSocket.emit(Events.MAKE_MOVE, params);
     }
 
-    private void setupGameSocket() {
-        mSocket = ((TTTApplication) getApplication()).getSocket();
-        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        mSocket.on(Events.GAME_BEGIN, onGameBegin);
-        mSocket.on(Events.OPPONENT_QUIT, onOpponentQuit);
-        mSocket.on(Events.MOVE_MADE, onMoveMade);
-        mSocket.on(Events.INCOMING_REMATCH_REQUEST, onRematchRequest);
-
-        mSocket.connect();
-    }
-
     /**
      * A listener that fires in case the socket connection
      * could not be established (or timed out).
@@ -177,26 +176,6 @@ public class MainActivity extends AppCompatActivity {
                     });
 
     /**
-     * Retrieves the representative symbol of the current player.
-     *
-     * @param args the server's response
-     */
-    private void retrieveSymbolFromResponse(Object[] args) {
-        try {
-            mSymbol = ((JSONObject) args[0]).getString("symbol").equals("X") ?
-                    Mark.X : Mark.O;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initializeGameBoard() {
-        mGridAdapter.reset();
-        myTurn = "X".equals(mSymbol.toString());
-        statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
-    }
-
-    /**
      * A listener that fires once the opponent player quits the current game.
      */
     private Emitter.Listener onOpponentQuit =
@@ -214,26 +193,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private Emitter.Listener onRematchRequest =
             args -> runOnUiThread(this::displayRequestNotificationDialog);
-
-    /**
-     * Displays a dialog, notifying the user of an incoming rematch request.
-     */
-    private void displayRequestNotificationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-        builder.setTitle("Rematch request");
-        builder.setMessage("Your opponent is asking for a rematch ! What do you say we kick his ass again ?");
-        builder.setNegativeButton("Not now",
-                (dialog, which) -> {
-                    acceptRematchRequest(false);
-                    Tasks.closeActivityAfterDelay(this);
-                })
-                .setPositiveButton("Yeah, why not",
-                        (dialog, which) -> acceptRematchRequest(true));
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
-    }
 
     /**
      * A listener that fires once a player makes a move on the grid.
@@ -260,6 +219,46 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     });
+
+    /**
+     * Retrieves the representative symbol of the current player.
+     *
+     * @param args the server's response
+     */
+    private void retrieveSymbolFromResponse(Object[] args) {
+        try {
+            mSymbol = ((JSONObject) args[0]).getString("symbol").equals("X") ?
+                    Mark.X : Mark.O;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initializeGameBoard() {
+        mGridAdapter.reset();
+        myTurn = "X".equals(mSymbol.toString());
+        statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
+    }
+
+    /**
+     * Displays a dialog, notifying the user of an incoming rematch request.
+     */
+    private void displayRequestNotificationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle("Rematch request");
+        builder.setMessage("Your opponent is asking for a rematch ! What do you say we kick his ass again ?");
+        builder.setNegativeButton("Not now",
+                (dialog, which) -> {
+                    acceptRematchRequest(false);
+                    Tasks.closeActivityAfterDelay(this);
+                })
+                .setPositiveButton("Yeah, why not",
+                        (dialog, which) -> acceptRematchRequest(true));
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+    }
 
     private void checkIfGameWasOver() {
         String statusMessage;

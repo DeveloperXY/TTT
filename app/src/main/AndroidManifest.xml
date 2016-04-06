@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".gameutils.NotificationUtils$NotificationActionService"/>
+        <service android:name=".gameutils.NotificationUtils$NotificationActionService" />
     </application>
 
 </manifest>

@@ -3,42 +3,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ui.HomeActivity"
-    android:background="@color/colorPrimary">
+    tools:context=".ui.HomeActivity">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:id="@+id/imageView"
-        android:src="@drawable/transparent_icon"
+        android:layout_above="@+id/buttonLayout"
         android:layout_centerInParent="true"
-        android:layout_above="@+id/buttonLayout" />
+        android:src="@drawable/transparent_icon" />
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/buttonLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_centerInParent="true"
-        android:id="@+id/buttonLayout">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PLAY"
             android:id="@+id/playButton"
-            android:onClick="onPlay" />
-
-        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="QUIT GAME"
+            android:onClick="onPlay"
+            android:text="PLAY" />
+
+        <Button
             android:id="@+id/quitButton"
-            android:onClick="onQuit" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onQuit"
+            android:text="QUIT GAME" />
     </LinearLayout>
 
 </RelativeLayout>
