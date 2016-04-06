@@ -28,17 +28,22 @@
 
         <Button
             android:id="@+id/playButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="180dp"
+            android:layout_height="70dp"
             android:onClick="onPlay"
-            android:text="PLAY" />
+            android:text="PLAY"
+            android:theme="@style/ThemeOverlay.MyDarkButton"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/quitButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="180dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="20dp"
             android:onClick="onQuit"
-            android:text="QUIT GAME" />
+            android:text="QUIT GAME"
+            android:theme="@style/ThemeOverlay.MyDarkButton"
+            android:textSize="20sp" />
     </LinearLayout>
 
 </RelativeLayout>

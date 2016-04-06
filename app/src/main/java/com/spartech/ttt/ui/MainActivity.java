@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("Not now",
                 (dialog, which) -> {
                     acceptRematchRequest(false);
-                    Tasks.closeActivityAfterDelay(this);
+//                    Tasks.closeActivityAfterDelay(this);
                 })
                 .setPositiveButton("Yeah, why not",
                         (dialog, which) -> acceptRematchRequest(true));
