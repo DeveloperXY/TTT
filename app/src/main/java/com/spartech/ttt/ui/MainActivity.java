@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket.off(Events.GAME_BEGIN, onGameBegin);
         mSocket.off(Events.OPPONENT_QUIT, onOpponentQuit);
         mSocket.off(Events.MOVE_MADE, onMoveMade);
+        mSocket.off(Events.INCOMING_REMATCH_REQUEST, onRematchRequest);
 
         if (executor != null)
             executor.shutdown();
@@ -147,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket.on(Events.GAME_BEGIN, onGameBegin);
         mSocket.on(Events.OPPONENT_QUIT, onOpponentQuit);
         mSocket.on(Events.MOVE_MADE, onMoveMade);
+        mSocket.on(Events.INCOMING_REMATCH_REQUEST, onRematchRequest);
 
         mSocket.connect();
     }
@@ -176,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Retrieves the representative symbol of the current player.
-     * SYMBOL
      *
      * @param args the server's response
      */
@@ -208,7 +209,18 @@ public class MainActivity extends AppCompatActivity {
                     });
 
     /**
-     * A listener that fires once the opponent player quits the current game.
+     * A listener that fires when the opponent player sends a rematch request.
+     */
+    private Emitter.Listener onRematchRequest =
+            args -> runOnUiThread(
+                    () -> {
+                        Toast.makeText(MainActivity.this,
+                                "Incoming rematch request !",
+                                Toast.LENGTH_LONG).show();
+                    });
+
+    /**
+     * A listener that fires once a player makes a move on the grid.
      */
     private Emitter.Listener onMoveMade =
             args -> runOnUiThread(
@@ -259,7 +271,8 @@ public class MainActivity extends AppCompatActivity {
         if (delayedFinish) {
             if (executor == null)
                 executor = Executors.newSingleThreadScheduledExecutor();
-            executor.schedule(Tasks.delayedFinish(this), 3, TimeUnit.SECONDS);
+//            executor.schedule(Tasks.delayedFinish(this), 3, TimeUnit.SECONDS);
+
         }
     }
 

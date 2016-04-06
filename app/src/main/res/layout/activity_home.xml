@@ -10,12 +10,21 @@
     tools:context=".ui.HomeActivity"
     android:background="@color/colorPrimary">
 
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/imageView"
+        android:src="@drawable/transparent_icon"
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/buttonLayout" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_centerInParent="true"
-        android:gravity="center">
+        android:id="@+id/buttonLayout">
 
         <Button
             android:layout_width="wrap_content"
@@ -32,11 +41,4 @@
             android:onClick="onQuit" />
     </LinearLayout>
 
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:id="@+id/imageView"
-        android:src="@drawable/transparent_icon"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
 </RelativeLayout>
