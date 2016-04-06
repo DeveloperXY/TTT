@@ -11,4 +11,6 @@ public class Events {
     public static final String MOVE_MADE = "moveMade";
     public static final String MAKE_MOVE = "makeMove";
     public static final String INCOMING_REMATCH_REQUEST = "rematchRequest";
+    public static final String DEMAND_REMATCH = "demandRematch";
+    public static final String REMATCH_REJECTED = "rematchRejected";
 }

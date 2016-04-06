@@ -1,9 +1,11 @@
 package com.spartech.ttt.ui;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,7 +15,6 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.spartech.ttt.R;
 import com.spartech.ttt.adapters.GridAdapter;
 import com.spartech.ttt.gameutils.Mark;
-import com.spartech.ttt.gameutils.Tasks;
 import com.spartech.ttt.model.Cells;
 import com.spartech.ttt.socketio.Events;
 import com.spartech.ttt.socketio.TTTApplication;
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
      */
     @Bind(R.id.statusLabel)
     TextView statusLabel;
+
+    @Bind(R.id.rematchButton)
+    Button rematchButton;
 
     /**
      * The grid's adapter.
@@ -100,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket.on(Events.OPPONENT_QUIT, onOpponentQuit);
         mSocket.on(Events.MOVE_MADE, onMoveMade);
         mSocket.on(Events.INCOMING_REMATCH_REQUEST, onRematchRequest);
+        mSocket.on(Events.REMATCH_REJECTED, onRematchRejected);
 
         mSocket.connect();
     }
@@ -115,6 +120,20 @@ public class MainActivity extends AppCompatActivity {
         mSocket.off(Events.OPPONENT_QUIT, onOpponentQuit);
         mSocket.off(Events.MOVE_MADE, onMoveMade);
         mSocket.off(Events.INCOMING_REMATCH_REQUEST, onRematchRequest);
+        mSocket.off(Events.REMATCH_REJECTED, onRematchRejected);
+    }
+
+    /**
+     * Invoked by a press on the 'Rematch' button.
+     *
+     * @param view
+     */
+    public void onRematch(View view) {
+        mSocket.emit(Events.DEMAND_REMATCH);
+        Snackbar.make(getWindow().getDecorView(),
+                "Rematch request sent.", Snackbar.LENGTH_LONG).show();
+        rematchButton.setEnabled(false);
+        statusLabel.setText("Waiting for your opponent's response...");
     }
 
     /**
@@ -164,6 +183,8 @@ public class MainActivity extends AppCompatActivity {
     private Emitter.Listener onGameBegin =
             args -> runOnUiThread(
                     () -> {
+                        rematchButton.setEnabled(true);
+                        rematchButton.setVisibility(View.INVISIBLE);
                         Toast.makeText(MainActivity.this,
                                 "Starting game !",
                                 Toast.LENGTH_LONG).show();
@@ -217,6 +238,20 @@ public class MainActivity extends AppCompatActivity {
                     });
 
     /**
+     * A listener that fires if the opponent player rejected the sent rematch request.
+     */
+    private Emitter.Listener onRematchRejected =
+            args -> runOnUiThread(
+                    () -> {
+                        Snackbar.make(getWindow().getDecorView(),
+                                "Your rematch request was rejected.",
+                                Snackbar.LENGTH_LONG).show();
+
+                        mGridAdapter.reset();
+                        statusLabel.setText("Waiting for opponent...");
+                    });
+
+    /**
      * Retrieves the representative symbol of the current player.
      *
      * @param args the server's response
@@ -242,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
     private void displayRequestNotificationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         builder.setTitle("Rematch request");
-        builder.setMessage("Your opponent is asking for a rematch ! What do you say we kick his ass again ?");
+        builder.setMessage("Your opponent is asking for a rematch ! How will you respond ?");
         builder.setNegativeButton("Not now",
                 (dialog, which) -> {
                     acceptRematchRequest(false);
@@ -262,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isGameOver()) {
             statusMessage = myTurn ? "Game over. You lost." : "Game over. You WON !";
+            rematchButton.setVisibility(View.VISIBLE);
         } else {
             if (mGridAdapter.isGridFull()) {
                 // This game is a draw

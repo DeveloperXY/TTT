@@ -17,7 +17,9 @@
         android:drawableLeft="@drawable/ic_action_goright"
         android:src="@drawable/ic_action_goright"
         android:text="Rematch"
-        android:theme="@style/ThemeOverlay.MyDarkButton" />
+        android:theme="@style/ThemeOverlay.MyDarkButton"
+        android:visibility="invisible"
+        android:onClick="onRematch" />
 
     <GridView
         android:id="@+id/cellsGridview"
@@ -37,6 +39,6 @@
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:text="Waiting for opponent..."
-        android:textSize="24sp" />
+        android:textSize="16sp" />
 
 </RelativeLayout>
