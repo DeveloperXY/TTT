@@ -22,6 +22,8 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -46,4 +48,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.annimon:stream:1.0.8'
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
+
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 }

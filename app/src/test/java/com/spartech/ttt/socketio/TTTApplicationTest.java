@@ -26,9 +26,4 @@ public class TTTApplicationTest {
     public void CreateNonNullSocketSuccessfully() throws URISyntaxException {
         assertNotNull(socket);
     }
-
-    @Test
-    public void ConnectSocketToServerSuccessful() throws Exception {
-        socket.connect();
-    }
 }

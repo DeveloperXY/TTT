@@ -254,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
                                 "Your rematch request was rejected.",
                                 Snackbar.LENGTH_LONG).show();
 
+                        repaintGridCells();
                         mGridAdapter.reset();
                         statusLabel.setText("Waiting for opponent...");
                     });
@@ -273,13 +274,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGameBoard() {
+        repaintGridCells();
+        mGridAdapter.reset();
+        myTurn = "X".equals(mSymbol.toString());
+        statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
+    }
+
+    private void repaintGridCells() {
         for (int i = 0; i < cellsGridview.getChildCount(); i++) {
             cellsGridview.getChildAt(i)
                     .setBackgroundResource(R.drawable.white_frame);
         }
-        mGridAdapter.reset();
-        myTurn = "X".equals(mSymbol.toString());
-        statusLabel.setText(myTurn ? "Your turn." : "Waiting for your opponent's move...");
     }
 
     /**
